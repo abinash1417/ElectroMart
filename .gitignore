@@ -3,6 +3,8 @@ backend/target/
 backend/.mvn/wrapper/maven-wrapper.jar
 backend/HELP.md
 
+backend/src/main/resources/application.properties
+
 # Backend IDE / tool files
 backend/.apt_generated
 backend/.classpath
