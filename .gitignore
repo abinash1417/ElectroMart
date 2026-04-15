@@ -1,0 +1,38 @@
+# Backend build output
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+backend/HELP.md
+
+# Backend IDE / tool files
+backend/.apt_generated
+backend/.classpath
+backend/.factorypath
+backend/.project
+backend/.settings
+backend/.springBeans
+backend/.sts4-cache
+backend/.idea/
+backend/*.iws
+backend/*.iml
+backend/*.ipr
+backend/build/
+
+# Frontend dependencies & build
+frontend/node_modules/
+frontend/dist/
+
+# Environment files
+.env
+.env.local
+frontend/.env
+frontend/.env.local
+
+# IDE
+.idea/
+.vscode/
+.DS_Store
+
+# Logs & temp
+*.log
+*.tmp
+*.class
