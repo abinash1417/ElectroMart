@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import API from '../services/api'
 import { FiSearch, FiFilter, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
+import { useCompare } from '../context/CompareContext'
 
 const PRODUCTS_PER_PAGE = 12
 
@@ -13,6 +14,7 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [searchParams] = useSearchParams()
+  const { addToCompare, isInCompare } = useCompare()
 
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category')
@@ -35,7 +37,6 @@ const Products = () => {
     fetchData()
   }, [])
 
-  // Reset to page 1 when search or category changes
   useEffect(() => {
     setCurrentPage(1)
   }, [search, selectedCategory])
@@ -149,12 +150,22 @@ const Products = () => {
                   <div className="p-4">
                     <p className="text-gray-500 text-xs mb-1">{product.category?.name}</p>
                     <h3 className="text-white font-semibold text-sm leading-tight mb-3 line-clamp-2">{product.name}</h3>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-2">
                       <p className="text-red-500 font-bold text-sm">LKR {product.price?.toLocaleString()}</p>
                       <span className={`text-xs px-2 py-1 rounded-full ${product.stock > 0 ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>
                         {product.stock > 0 ? 'In Stock' : 'Out'}
                       </span>
                     </div>
+                    <button
+                      onClick={(e) => { e.preventDefault(); addToCompare(product); }}
+                      className={`w-full text-xs py-1.5 rounded-lg border transition-colors ${
+                        isInCompare(product.id)
+                          ? 'bg-red-600 border-red-600 text-white'
+                          : 'bg-transparent border-gray-700 text-gray-400 hover:border-red-500 hover:text-red-400'
+                      }`}
+                    >
+                      {isInCompare(product.id) ? '✓ Added to Compare' : '⚡ Add to Compare'}
+                    </button>
                   </div>
                 </Link>
               ))}
