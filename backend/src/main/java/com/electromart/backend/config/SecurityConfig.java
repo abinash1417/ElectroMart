@@ -106,6 +106,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/orders/user/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/orders/*/cancel").permitAll()                        .requestMatchers("/api/ai/**").permitAll()
                         .requestMatchers("/api/password/**").permitAll()
+                        .requestMatchers("/api/ai/**").permitAll()
 
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
