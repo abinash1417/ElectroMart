@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import API from '../services/api'
 import { useAuth } from '../context/AuthContext'
+import { useCompare } from '../context/CompareContext'
 import toast from 'react-hot-toast'
 import { FiShoppingCart, FiArrowLeft, FiStar } from 'react-icons/fi'
 
 const ProductDetail = () => {
   const { id } = useParams()
   const { user } = useAuth()
+  const { addToCompare, isInCompare } = useCompare()
   const navigate = useNavigate()
   const [product, setProduct] = useState(null)
   const [reviews, setReviews] = useState([])
@@ -181,6 +183,17 @@ const ProductDetail = () => {
                 </div>
               </div>
             )}
+
+            <button
+              onClick={() => addToCompare(product)}
+              className={`mt-3 w-full py-3 rounded-xl border font-semibold transition-colors flex items-center justify-center gap-2 ${
+                isInCompare(product.id)
+                  ? 'bg-red-600 border-red-600 text-white'
+                  : 'bg-transparent border-gray-700 text-gray-300 hover:border-red-500 hover:text-red-400'
+              }`}
+            >
+              {isInCompare(product.id) ? '✓ Added to Compare' : '⚡ Add to Compare'}
+            </button>
           </div>
         </div>
 
