@@ -13,6 +13,9 @@ import Contact from './pages/Contact'
 import AdminDashboard from './pages/AdminDashboard.jsx'
 import ProtectedRoute from './components/common/ProtectedRoute'
 import NotFound from './pages/NotFound'
+import ChatBot from "./components/common/ChatBot";
+import ComparePage from './pages/ComparePage'
+import CompareBar from './components/common/CompareBar'
 
 function App() {
   return (
@@ -31,9 +34,12 @@ function App() {
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/compare" element={<ComparePage />} />
         </Routes>
       </main>
       <Footer />
+      <CompareBar />
+      <ChatBot />
     </div>
   )
 }
