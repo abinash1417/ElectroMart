@@ -16,6 +16,8 @@ import NotFound from './pages/NotFound'
 import ChatBot from "./components/common/ChatBot";
 import ComparePage from './pages/ComparePage'
 import CompareBar from './components/common/CompareBar'
+import WishlistPage from './pages/WishlistPage'
+
 
 function App() {
   return (
@@ -35,6 +37,7 @@ function App() {
           <Route path="/admin" element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
           <Route path="/compare" element={<ComparePage />} />
+          <Route path="/wishlist" element={<ProtectedRoute><WishlistPage /></ProtectedRoute>} />
         </Routes>
       </main>
       <Footer />
