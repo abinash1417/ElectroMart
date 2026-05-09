@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import API from '../services/api'
-import { FiSearch, FiFilter, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
+import { FiSearch, FiFilter, FiChevronLeft, FiChevronRight, FiHeart } from 'react-icons/fi'
 import { useCompare } from '../context/CompareContext'
+import { useAuth } from '../context/AuthContext'
+import toast from 'react-hot-toast'
 
 const PRODUCTS_PER_PAGE = 12
 
@@ -14,7 +16,9 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [searchParams] = useSearchParams()
+  const [wishlistItems, setWishlistItems] = useState([])
   const { addToCompare, isInCompare } = useCompare()
+  const { user } = useAuth()
 
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category')
@@ -38,8 +42,32 @@ const Products = () => {
   }, [])
 
   useEffect(() => {
+  if (user && user.id) {
+    API.get(`/api/wishlist/${user.id}`)
+        .then(res => setWishlistItems(res.data.map(p => p.id)))
+        .catch(err => console.error(err))
+    }
+  }, [user])
+
+  useEffect(() => {
     setCurrentPage(1)
   }, [search, selectedCategory])
+
+  const handleWishlistToggle = async (e, product) => {
+    e.preventDefault()
+    if (!user) { toast.error('Please login to add to wishlist!'); return; }
+    try {
+      await API.post('/api/wishlist/toggle', { userId: user.id, productId: product.id })
+      const isWishlisted = wishlistItems.includes(product.id)
+      setWishlistItems(prev =>
+        isWishlisted ? prev.filter(id => id !== product.id) : [...prev, product.id]
+      )
+      window.dispatchEvent(new Event('wishlistUpdated'))
+      toast.success(isWishlisted ? 'Removed from wishlist!' : 'Added to wishlist! ❤️')
+    } catch (err) {
+      toast.error('Failed to update wishlist!')
+    }
+  }
 
   const filtered = products.filter(p => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
@@ -62,7 +90,6 @@ const Products = () => {
     <div className="bg-gray-950 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">All Products</h1>
           <p className="text-gray-400">
@@ -70,7 +97,6 @@ const Products = () => {
           </p>
         </div>
 
-        {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <div className="relative flex-grow">
             <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
@@ -97,7 +123,6 @@ const Products = () => {
           </div>
         </div>
 
-        {/* Category Pills */}
         <div className="flex flex-wrap gap-2 mb-8">
           <button
             onClick={() => setSelectedCategory('')}
@@ -116,7 +141,6 @@ const Products = () => {
           ))}
         </div>
 
-        {/* Products Grid */}
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {[...Array(12)].map((_, i) => (
@@ -139,13 +163,19 @@ const Products = () => {
                   to={`/products/${product.id}`}
                   className="bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-red-500/50 rounded-xl overflow-hidden transition-all group"
                 >
-                  <div className="aspect-square bg-gray-800 overflow-hidden">
+                  <div className="aspect-square bg-gray-800 overflow-hidden relative">
                     <img
                       src={`http://localhost:8080/images/products/${product.frontImage}`}
                       alt={product.name}
                       className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => { e.target.src = 'https://placehold.co/300x300/1f2937/6b7280?text=No+Image' }}
                     />
+                    <button
+                      onClick={(e) => handleWishlistToggle(e, product)}
+                      className="absolute top-2 right-2 p-1.5 bg-gray-900/80 rounded-full hover:bg-gray-800 transition-colors"
+                    >
+                      <FiHeart className={`text-sm ${wishlistItems.includes(product.id) ? 'text-red-500 fill-red-500' : 'text-gray-400'}`} />
+                    </button>
                   </div>
                   <div className="p-4">
                     <p className="text-gray-500 text-xs mb-1">{product.category?.name}</p>
@@ -171,7 +201,6 @@ const Products = () => {
               ))}
             </div>
 
-            {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-12">
                 <button
