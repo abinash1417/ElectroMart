@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import API from '../../services/api'
-import { FiShoppingCart, FiUser, FiMenu, FiX, FiZap } from 'react-icons/fi'
+import { FiShoppingCart, FiUser, FiMenu, FiX, FiZap, FiHeart } from 'react-icons/fi'
 import { MdAdminPanelSettings } from 'react-icons/md'
 
 const Navbar = () => {
@@ -10,29 +10,43 @@ const Navbar = () => {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
   const [cartCount, setCartCount] = useState(0)
+  const [wishlistCount, setWishlistCount] = useState(0)
 
-useEffect(() => {
-  if (user) {
+  useEffect(() => {
+  if (user && user.id) {
     fetchCartCount()
+    fetchWishlistCount()
   } else {
-    setCartCount(0)
-  }
+      setCartCount(0)
+      setWishlistCount(0)
+    }
 
-  const handleCartUpdate = () => {
-    if (user) fetchCartCount()
-  }
+    const handleCartUpdate = () => { if (user) fetchCartCount() }
+    const handleWishlistUpdate = () => { if (user) fetchWishlistCount() }
 
-  window.addEventListener('cartUpdated', handleCartUpdate)
-  return () => window.removeEventListener('cartUpdated', handleCartUpdate)
-}, [user])
+    window.addEventListener('cartUpdated', handleCartUpdate)
+    window.addEventListener('wishlistUpdated', handleWishlistUpdate)
+    return () => {
+      window.removeEventListener('cartUpdated', handleCartUpdate)
+      window.removeEventListener('wishlistUpdated', handleWishlistUpdate)
+    }
+  }, [user])
 
   const fetchCartCount = async () => {
     try {
       const res = await API.get(`/api/cart/user/${user.id}`)
-      const count = res.data?.cartItems?.length || 0
-      setCartCount(count)
+      setCartCount(res.data?.cartItems?.length || 0)
     } catch (err) {
       setCartCount(0)
+    }
+  }
+
+  const fetchWishlistCount = async () => {
+    try {
+      const res = await API.get(`/api/wishlist/${user.id}`)
+      setWishlistCount(res.data?.length || 0)
+    } catch (err) {
+      setWishlistCount(0)
     }
   }
 
@@ -41,6 +55,7 @@ useEffect(() => {
     navigate('/')
     setMenuOpen(false)
     setCartCount(0)
+    setWishlistCount(0)
   }
 
   return (
@@ -48,7 +63,6 @@ useEffect(() => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <FiZap className="text-red-500 text-2xl" />
             <span className="text-xl font-bold text-white">
@@ -56,14 +70,12 @@ useEffect(() => {
             </span>
           </Link>
 
-          {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
             <Link to="/" className="text-gray-300 hover:text-red-500 transition-colors">Home</Link>
             <Link to="/products" className="text-gray-300 hover:text-red-500 transition-colors">Products</Link>
             <Link to="/contact" className="text-gray-300 hover:text-red-500 transition-colors">Contact</Link>
           </div>
 
-          {/* Desktop Right */}
           <div className="hidden md:flex items-center gap-4">
             {user ? (
               <>
@@ -73,6 +85,16 @@ useEffect(() => {
                     <span className="text-sm">Admin</span>
                   </Link>
                 )}
+
+                <Link to="/wishlist" className="relative text-gray-300 hover:text-red-500 transition-colors">
+                  <FiHeart className="text-xl" />
+                  {wishlistCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                      {wishlistCount}
+                    </span>
+                  )}
+                </Link>
+
                 <Link to="/cart" className="relative text-gray-300 hover:text-red-500 transition-colors">
                   <FiShoppingCart className="text-xl" />
                   {cartCount > 0 && (
@@ -81,6 +103,7 @@ useEffect(() => {
                     </span>
                   )}
                 </Link>
+
                 <Link to="/profile" className="flex items-center gap-2 text-gray-300 hover:text-red-500 transition-colors">
                   <FiUser className="text-xl" />
                   <span className="text-sm">{user.name}</span>
@@ -102,7 +125,6 @@ useEffect(() => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             className="md:hidden text-gray-300 hover:text-white"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -112,7 +134,6 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden bg-gray-900 border-t border-gray-800 px-4 py-4 flex flex-col gap-4">
           <Link to="/" onClick={() => setMenuOpen(false)} className="text-gray-300 hover:text-red-500">Home</Link>
@@ -120,6 +141,9 @@ useEffect(() => {
           <Link to="/contact" onClick={() => setMenuOpen(false)} className="text-gray-300 hover:text-red-500">Contact</Link>
           {user ? (
             <>
+              <Link to="/wishlist" onClick={() => setMenuOpen(false)} className="text-gray-300 hover:text-red-500 flex items-center gap-2">
+                Wishlist {wishlistCount > 0 && <span className="bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{wishlistCount}</span>}
+              </Link>
               <Link to="/cart" onClick={() => setMenuOpen(false)} className="text-gray-300 hover:text-red-500 flex items-center gap-2">
                 Cart {cartCount > 0 && <span className="bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{cartCount}</span>}
               </Link>
