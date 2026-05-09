@@ -4,7 +4,7 @@ import API from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { useCompare } from '../context/CompareContext'
 import toast from 'react-hot-toast'
-import { FiShoppingCart, FiArrowLeft, FiStar } from 'react-icons/fi'
+import { FiShoppingCart, FiArrowLeft, FiStar, FiHeart } from 'react-icons/fi'
 
 const ProductDetail = () => {
   const { id } = useParams()
@@ -21,6 +21,7 @@ const ProductDetail = () => {
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState('')
   const [submittingReview, setSubmittingReview] = useState(false)
+  const [inWishlist, setInWishlist] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +41,11 @@ const ProductDetail = () => {
           .filter(p => p.category?.id === currentProduct.category?.id && p.id !== currentProduct.id)
           .slice(0, 4)
         setRelatedProducts(related)
+
+        if (user && user.id) {
+          const wishlistRes = await API.get(`/api/wishlist/check/${user.id}/${id}`)
+          setInWishlist(wishlistRes.data.inWishlist)
+        }
       } catch (err) {
         console.error(err)
       } finally {
@@ -47,7 +53,7 @@ const ProductDetail = () => {
       }
     }
     fetchData()
-  }, [id])
+  }, [id, user])
 
   const handleAddToCart = async () => {
     if (!user) {
@@ -69,6 +75,18 @@ const ProductDetail = () => {
       toast.error('Failed to add to cart!')
     } finally {
       setAddingToCart(false)
+    }
+  }
+
+  const handleWishlistToggle = async () => {
+    if (!user) { toast.error('Please login!'); navigate('/login'); return; }
+    try {
+      await API.post('/api/wishlist/toggle', { userId: user.id, productId: product.id })
+      setInWishlist(prev => !prev)
+      window.dispatchEvent(new Event('wishlistUpdated'))
+      toast.success(inWishlist ? 'Removed from wishlist!' : 'Added to wishlist! ❤️')
+    } catch (err) {
+      toast.error('Failed to update wishlist!')
     }
   }
 
@@ -135,7 +153,22 @@ const ProductDetail = () => {
 
           <div className="flex flex-col justify-center">
             <p className="text-red-500 text-sm font-medium mb-2">{product.category?.name}</p>
-            <h1 className="text-3xl font-bold text-white mb-4">{product.name}</h1>
+
+            {/* Title + Wishlist */}
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <h1 className="text-3xl font-bold text-white">{product.name}</h1>
+              <button
+                onClick={handleWishlistToggle}
+                className={`p-3 rounded-xl border transition-colors flex-shrink-0 ${
+                  inWishlist
+                    ? 'bg-red-600 border-red-600 text-white'
+                    : 'bg-gray-900 border-gray-700 text-gray-400 hover:border-red-500 hover:text-red-400'
+                }`}
+              >
+                <FiHeart className={inWishlist ? 'fill-white' : ''} />
+              </button>
+            </div>
+
             <p className="text-gray-400 leading-relaxed mb-6">{product.description}</p>
 
             <div className="flex items-center gap-4 mb-6">
