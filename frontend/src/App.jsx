@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import { ThemeProvider, useTheme } from './context/ThemeContext'
 import Navbar from './components/common/Navbar'
 import Footer from './components/common/Footer'
 import Home from './pages/Home'
@@ -13,15 +14,15 @@ import Contact from './pages/Contact'
 import AdminDashboard from './pages/AdminDashboard.jsx'
 import ProtectedRoute from './components/common/ProtectedRoute'
 import NotFound from './pages/NotFound'
-import ChatBot from "./components/common/ChatBot";
+import ChatBot from "./components/common/ChatBot"
 import ComparePage from './pages/ComparePage'
 import CompareBar from './components/common/CompareBar'
 import WishlistPage from './pages/WishlistPage'
 
-
-function App() {
+function AppContent() {
+  const { isDark } = useTheme()
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col">
+    <div className={`min-h-screen flex flex-col transition-colors duration-300 ${isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
       <Navbar />
       <main className="flex-grow">
         <Routes>
@@ -44,6 +45,14 @@ function App() {
       <CompareBar />
       <ChatBot />
     </div>
+  )
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   )
 }
 

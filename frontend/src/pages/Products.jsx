@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTheme } from '../context/ThemeContext'
 import { Link, useSearchParams } from 'react-router-dom'
 import API from '../services/api'
 import { FiSearch, FiFilter, FiChevronLeft, FiChevronRight, FiHeart } from 'react-icons/fi'
@@ -9,6 +10,7 @@ import toast from 'react-hot-toast'
 const PRODUCTS_PER_PAGE = 12
 
 const Products = () => {
+  const { isDark } = useTheme()
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
@@ -22,8 +24,14 @@ const Products = () => {
 
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category')
-    if (categoryFromUrl) setSelectedCategory(categoryFromUrl)
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl)
+    } else {
+      setSelectedCategory('')
+    }
+  }, [searchParams])
 
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const [catRes, prodRes] = await Promise.all([
@@ -87,12 +95,12 @@ const Products = () => {
   }
 
   return (
-    <div className="bg-gray-950 min-h-screen">
+    <div className={isDark ? "bg-gray-950 min-h-screen" : "bg-gray-50 min-h-screen"}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">All Products</h1>
-          <p className="text-gray-400">
+          <h1 className={isDark ? "text-4xl font-bold text-white mb-2" : "text-4xl font-bold text-gray-900 mb-2"}>All Products</h1>
+          <p className={isDark ? "text-gray-400" : "text-gray-500"}>
             Showing {filtered.length === 0 ? 0 : (currentPage - 1) * PRODUCTS_PER_PAGE + 1}–{Math.min(currentPage * PRODUCTS_PER_PAGE, filtered.length)} of {filtered.length} products
           </p>
         </div>
@@ -105,7 +113,7 @@ const Products = () => {
               placeholder="Search products..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 transition-colors"
+              className={isDark ? "w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 transition-colors" : "w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-red-500 transition-colors"}
             />
           </div>
           <div className="relative">
@@ -113,7 +121,7 @@ const Products = () => {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-8 py-3 text-white focus:outline-none focus:border-red-500 transition-colors appearance-none cursor-pointer"
+              className={isDark ? "bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-8 py-3 text-white focus:outline-none focus:border-red-500 transition-colors appearance-none cursor-pointer" : "bg-white border border-gray-300 rounded-xl pl-10 pr-8 py-3 text-gray-900 focus:outline-none focus:border-red-500 transition-colors appearance-none cursor-pointer"}
             >
               <option value="">All Categories</option>
               {categories.map(cat => (
@@ -126,7 +134,7 @@ const Products = () => {
         <div className="flex flex-wrap gap-2 mb-8">
           <button
             onClick={() => setSelectedCategory('')}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === '' ? 'bg-red-600 text-white' : 'bg-gray-900 text-gray-400 hover:text-white border border-gray-700'}`}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === '' ? 'bg-red-600 text-white' : isDark ? 'bg-gray-900 text-gray-400 hover:text-white border border-gray-700' : 'bg-white text-gray-500 hover:text-gray-900 border border-gray-300'}`}
           >
             All
           </button>
@@ -134,7 +142,7 @@ const Products = () => {
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(String(cat.id))}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === String(cat.id) ? 'bg-red-600 text-white' : 'bg-gray-900 text-gray-400 hover:text-white border border-gray-700'}`}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${selectedCategory === String(cat.id) ? 'bg-red-600 text-white' : isDark ? 'bg-gray-900 text-gray-400 hover:text-white border border-gray-700' : 'bg-white text-gray-500 hover:text-gray-900 border border-gray-300'}`}
             >
               {cat.name}
             </button>
@@ -144,7 +152,7 @@ const Products = () => {
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {[...Array(12)].map((_, i) => (
-              <div key={i} className="bg-gray-900 rounded-xl h-72 animate-pulse"></div>
+              <div key={i} className={isDark ? "bg-gray-900 rounded-xl h-72 animate-pulse" : "bg-gray-200 rounded-xl h-72 animate-pulse"}></div>
             ))}
           </div>
         ) : filtered.length === 0 ? (
@@ -161,9 +169,9 @@ const Products = () => {
                 <Link
                   key={product.id}
                   to={`/products/${product.id}`}
-                  className="bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-red-500/50 rounded-xl overflow-hidden transition-all group"
+                  className={isDark ? "bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-red-500/50 rounded-xl overflow-hidden transition-all group" : "bg-white hover:bg-gray-50 border border-gray-200 hover:border-red-500/50 rounded-xl overflow-hidden transition-all group"}
                 >
-                  <div className="aspect-square bg-gray-800 overflow-hidden relative">
+                  <div className={isDark ? "aspect-square bg-gray-800 overflow-hidden relative" : "aspect-square bg-gray-100 overflow-hidden relative"}>
                     <img
                       src={`http://localhost:8080/images/products/${product.frontImage}`}
                       alt={product.name}
@@ -179,7 +187,7 @@ const Products = () => {
                   </div>
                   <div className="p-4">
                     <p className="text-gray-500 text-xs mb-1">{product.category?.name}</p>
-                    <h3 className="text-white font-semibold text-sm leading-tight mb-3 line-clamp-2">{product.name}</h3>
+                    <h3 className={isDark ? "text-white font-semibold text-sm leading-tight mb-3 line-clamp-2" : "text-gray-900 font-semibold text-sm leading-tight mb-3 line-clamp-2"}>{product.name}</h3>
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-red-500 font-bold text-sm">LKR {product.price?.toLocaleString()}</p>
                       <span className={`text-xs px-2 py-1 rounded-full ${product.stock > 0 ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>
@@ -191,7 +199,7 @@ const Products = () => {
                       className={`w-full text-xs py-1.5 rounded-lg border transition-colors ${
                         isInCompare(product.id)
                           ? 'bg-red-600 border-red-600 text-white'
-                          : 'bg-transparent border-gray-700 text-gray-400 hover:border-red-500 hover:text-red-400'
+                          : isDark ? 'bg-transparent border-gray-700 text-gray-400 hover:border-red-500 hover:text-red-400' : 'bg-transparent border-gray-300 text-gray-500 hover:border-red-500 hover:text-red-400'
                       }`}
                     >
                       {isInCompare(product.id) ? '✓ Added to Compare' : '⚡ Add to Compare'}
@@ -206,7 +214,7 @@ const Products = () => {
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="flex items-center gap-1 px-4 py-2 bg-gray-900 border border-gray-700 text-gray-400 hover:text-white hover:border-red-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors"
+                  className={isDark ? "flex items-center gap-1 px-4 py-2 bg-gray-900 border border-gray-700 text-gray-400 hover:text-white hover:border-red-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors" : "flex items-center gap-1 px-4 py-2 bg-white border border-gray-300 text-gray-500 hover:text-gray-900 hover:border-red-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors"}
                 >
                   <FiChevronLeft /> Prev
                 </button>
@@ -243,7 +251,7 @@ const Products = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="flex items-center gap-1 px-4 py-2 bg-gray-900 border border-gray-700 text-gray-400 hover:text-white hover:border-red-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors"
+                  className={isDark ? "flex items-center gap-1 px-4 py-2 bg-gray-900 border border-gray-700 text-gray-400 hover:text-white hover:border-red-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors" : "flex items-center gap-1 px-4 py-2 bg-white border border-gray-300 text-gray-500 hover:text-gray-900 hover:border-red-500 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl transition-colors"}
                 >
                   Next <FiChevronRight />
                 </button>

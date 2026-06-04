@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
+import { useTheme } from '../context/ThemeContext'
 import { FiHome, FiZap } from 'react-icons/fi'
 
 const NotFound = () => {
+  const { isDark } = useTheme()
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
       <div className="text-center">

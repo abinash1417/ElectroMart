@@ -1,9 +1,11 @@
+import { useTheme } from '../context/ThemeContext'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import API from '../services/api'
 import { FiArrowRight, FiShoppingCart, FiZap, FiShield, FiTruck, FiHeadphones } from 'react-icons/fi'
 
 const Home = () => {
+  const { isDark } = useTheme()
   const [categories, setCategories] = useState([])
   const [featuredProducts, setFeaturedProducts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -29,10 +31,9 @@ const Home = () => {
   const categoryIcons = ['📱', '💻', '🎧', '⌚', '📺', '📷', '🎮', '🔋']
 
   return (
-    <div className="bg-gray-950">
+    <div className={isDark ? "bg-gray-950" : "bg-gray-50"}>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-950 to-black">
+      <section className={isDark ? "relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-950 to-black" : "relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-gray-50"}>
         <div className="absolute inset-0 bg-gradient-to-r from-red-900/20 to-transparent"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
           <div className="max-w-2xl">
@@ -40,10 +41,10 @@ const Home = () => {
               <FiZap className="text-red-500" />
               <span className="text-red-400 text-sm font-medium">New Arrivals Available</span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
+            <h1 className={isDark ? "text-5xl md:text-6xl font-bold text-white leading-tight mb-6" : "text-5xl md:text-6xl font-bold text-gray-900 leading-tight mb-6"}>
               Next-Gen <span className="text-red-500">Electronics</span> At Your Fingertips
             </h1>
-            <p className="text-gray-400 text-lg mb-8 leading-relaxed">
+            <p className={isDark ? "text-gray-400 text-lg mb-8 leading-relaxed" : "text-gray-600 text-lg mb-8 leading-relaxed"}>
               Discover the latest smartphones, laptops, gaming gear and more. Premium electronics at the best prices in Sri Lanka.
             </p>
             <div className="flex flex-wrap gap-4">
@@ -63,13 +64,11 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Decorative circles */}
         <div className="absolute top-20 right-10 w-72 h-72 bg-red-600/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-10 right-40 w-48 h-48 bg-red-600/5 rounded-full blur-2xl"></div>
       </section>
 
-      {/* Features Bar */}
-      <section className="bg-gray-900 border-y border-gray-800">
+      <section className={isDark ? "bg-gray-900 border-y border-gray-800" : "bg-white border-y border-gray-200"}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
@@ -83,8 +82,8 @@ const Home = () => {
                   {feature.icon}
                 </div>
                 <div>
-                  <p className="text-white font-semibold text-sm">{feature.title}</p>
-                  <p className="text-gray-500 text-xs">{feature.desc}</p>
+                  <p className={isDark ? "text-white font-semibold text-sm" : "text-gray-900 font-semibold text-sm"}>{feature.title}</p>
+                  <p className={isDark ? "text-gray-500 text-xs" : "text-gray-400 text-xs"}>{feature.desc}</p>
                 </div>
               </div>
             ))}
@@ -92,12 +91,11 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Categories */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-white">Shop by Category</h2>
-            <p className="text-gray-400 mt-1">Find exactly what you're looking for</p>
+            <h2 className={isDark ? "text-3xl font-bold text-white" : "text-3xl font-bold text-gray-900"}>Shop by Category</h2>
+            <p className={isDark ? "text-gray-400 mt-1" : "text-gray-500 mt-1"}>Find exactly what you're looking for</p>
           </div>
           <Link to="/products" className="text-red-500 hover:text-red-400 flex items-center gap-1 text-sm">
             View All <FiArrowRight />
@@ -109,21 +107,20 @@ const Home = () => {
             <Link
               key={cat.id}
               to={`/products?category=${cat.id}`}
-              className="bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-red-500/50 rounded-xl p-4 text-center transition-all group"
+              className={isDark ? "bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-red-500/50 rounded-xl p-4 text-center transition-all group" : "bg-white hover:bg-gray-50 border border-gray-200 hover:border-red-500/50 rounded-xl p-4 text-center transition-all group"}
             >
               <div className="text-3xl mb-2">{categoryIcons[i] || '📦'}</div>
-              <p className="text-gray-300 group-hover:text-white text-xs font-medium leading-tight">{cat.name}</p>
+              <p className={isDark ? "text-gray-300 group-hover:text-white text-xs font-medium leading-tight" : "text-gray-600 group-hover:text-gray-900 text-xs font-medium leading-tight"}>{cat.name}</p>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* Featured Products */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-16">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-white">Featured Products</h2>
-            <p className="text-gray-400 mt-1">Handpicked just for you</p>
+            <h2 className={isDark ? "text-3xl font-bold text-white" : "text-3xl font-bold text-gray-900"}>Featured Products</h2>
+            <p className={isDark ? "text-gray-400 mt-1" : "text-gray-500 mt-1"}>Handpicked just for you</p>
           </div>
           <Link to="/products" className="text-red-500 hover:text-red-400 flex items-center gap-1 text-sm">
             View All <FiArrowRight />
@@ -133,7 +130,7 @@ const Home = () => {
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-gray-900 rounded-xl h-64 animate-pulse"></div>
+              <div key={i} className={isDark ? "bg-gray-900 rounded-xl h-64 animate-pulse" : "bg-gray-200 rounded-xl h-64 animate-pulse"}></div>
             ))}
           </div>
         ) : (
@@ -142,9 +139,9 @@ const Home = () => {
               <Link
                 key={product.id}
                 to={`/products/${product.id}`}
-                className="bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-red-500/50 rounded-xl overflow-hidden transition-all group"
+                className={isDark ? "bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-red-500/50 rounded-xl overflow-hidden transition-all group" : "bg-white hover:bg-gray-50 border border-gray-200 hover:border-red-500/50 rounded-xl overflow-hidden transition-all group"}
               >
-                <div className="aspect-square bg-gray-800 overflow-hidden">
+                <div className={isDark ? "aspect-square bg-gray-800 overflow-hidden" : "aspect-square bg-gray-100 overflow-hidden"}>
                   <img
                     src={`http://localhost:8080/images/products/${product.frontImage}`}
                     alt={product.name}
@@ -153,8 +150,8 @@ const Home = () => {
                   />
                 </div>
                 <div className="p-4">
-                  <p className="text-gray-400 text-xs mb-1">{product.category?.name}</p>
-                  <h3 className="text-white font-semibold text-sm leading-tight mb-2 line-clamp-2">{product.name}</h3>
+                  <p className={isDark ? "text-gray-400 text-xs mb-1" : "text-gray-500 text-xs mb-1"}>{product.category?.name}</p>
+                  <h3 className={isDark ? "text-white font-semibold text-sm leading-tight mb-2 line-clamp-2" : "text-gray-900 font-semibold text-sm leading-tight mb-2 line-clamp-2"}>{product.name}</h3>
                   <div className="flex items-center justify-between">
                     <p className="text-red-500 font-bold">LKR {product.price?.toLocaleString()}</p>
                     <span className={`text-xs px-2 py-1 rounded-full ${product.stock > 0 ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>
@@ -168,11 +165,10 @@ const Home = () => {
         )}
       </section>
 
-      {/* CTA Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="bg-gradient-to-r from-red-900/40 to-gray-900 border border-red-900/50 rounded-2xl p-10 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Ready to Shop?</h2>
-          <p className="text-gray-400 mb-6">Browse our full collection of premium electronics</p>
+        <div className={isDark ? "bg-gradient-to-r from-red-900/40 to-gray-900 border border-red-900/50 rounded-2xl p-10 text-center" : "bg-gradient-to-r from-red-50 to-gray-50 border border-red-200 rounded-2xl p-10 text-center"}>
+          <h2 className={isDark ? "text-3xl font-bold text-white mb-4" : "text-3xl font-bold text-gray-900 mb-4"}>Ready to Shop?</h2>
+          <p className={isDark ? "text-gray-400 mb-6" : "text-gray-600 mb-6"}>Browse our full collection of premium electronics</p>
           <Link
             to="/products"
             className="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-4 rounded-xl transition-colors inline-flex items-center gap-2"

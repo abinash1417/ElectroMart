@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTheme } from '../context/ThemeContext'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import API from '../services/api'
@@ -6,6 +7,7 @@ import toast from 'react-hot-toast'
 import { FiZap, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi'
 
 const Login = () => {
+  const { isDark } = useTheme()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -56,7 +58,6 @@ const Login = () => {
     <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
 
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-2">
             <FiZap className="text-red-500 text-3xl" />
@@ -116,7 +117,6 @@ const Login = () => {
           </div>
 
         ) : (
-          /* ── Forgot Password Form ── */
           <div className="bg-gray-900 rounded-2xl border border-gray-800 p-8">
             <button onClick={() => { setShowForgot(false); setResetSent(false); setForgotEmail('') }}
               className="text-gray-500 hover:text-gray-300 text-sm flex items-center gap-1 mb-6 transition-colors">
@@ -152,7 +152,6 @@ const Login = () => {
                 </form>
               </>
             ) : (
-              /* Success State */
               <div className="text-center py-4">
                 <div className="w-16 h-16 bg-green-600/20 border border-green-600/40 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-green-400 text-3xl">✓</span>

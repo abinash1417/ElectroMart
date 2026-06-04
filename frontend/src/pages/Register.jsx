@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { useTheme } from '../context/ThemeContext'
 import { Link, useNavigate } from 'react-router-dom'
 import API from '../services/api'
 import toast from 'react-hot-toast'
 import { FiZap, FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiPhone, FiMapPin } from 'react-icons/fi'
 
 const Register = () => {
+  const { isDark } = useTheme()
   const [form, setForm] = useState({
     name: '', email: '', password: '', confirmPassword: '',
     phoneNumber: '', address: '', city: ''
@@ -128,7 +130,6 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Address */}
             <div>
               <label className="text-gray-400 text-sm mb-2 block">Delivery Address</label>
               <div className="relative">
@@ -147,7 +148,6 @@ const Register = () => {
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 transition-colors" />
             </div>
 
-            {/* Password */}
             <div>
               <label className="text-gray-400 text-sm mb-2 block">Password</label>
               <div className="relative">
@@ -161,7 +161,6 @@ const Register = () => {
                 </button>
               </div>
 
-              {/* Password Strength Bar */}
               {form.password && (
                 <div className="mt-2">
                   <div className="flex gap-1 mb-1">
@@ -173,7 +172,6 @@ const Register = () => {
                 </div>
               )}
 
-              {/* Password Rules */}
               {form.password && passwordErrors.length > 0 && (
                 <div className="mt-2 space-y-1">
                   {passwordRules.map((rule, i) => (
@@ -185,7 +183,6 @@ const Register = () => {
               )}
             </div>
 
-            {/* Confirm Password */}
             <div>
               <label className="text-gray-400 text-sm mb-2 block">Confirm Password</label>
               <div className="relative">

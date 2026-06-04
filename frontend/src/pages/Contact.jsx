@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { useTheme } from '../context/ThemeContext'
 import API from '../services/api'
 import toast from 'react-hot-toast'
 import { FiMail, FiPhone, FiMapPin, FiSend } from 'react-icons/fi'
 
 const Contact = () => {
+  const { isDark } = useTheme()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [subject, setSubject] = useState('')
@@ -41,7 +43,6 @@ const Contact = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* Contact Info */}
           <div className="space-y-6">
             <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
               <div className="flex items-center gap-4">
@@ -82,7 +83,6 @@ const Contact = () => {
             </div>
           </div>
 
-          {/* Contact Form */}
           <div className="lg:col-span-2 bg-gray-900 border border-gray-800 rounded-xl p-8">
             <h2 className="text-xl font-bold text-white mb-6">Send a Message</h2>
 

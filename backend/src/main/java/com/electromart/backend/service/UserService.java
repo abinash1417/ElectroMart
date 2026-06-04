@@ -4,9 +4,14 @@ import com.electromart.backend.dto.AuthResponse;
 import com.electromart.backend.dto.UserDTO;
 import com.electromart.backend.exception.BadRequestException;
 import com.electromart.backend.exception.ResourceNotFoundException;
+import com.electromart.backend.model.Cart;
 import com.electromart.backend.model.Role;
 import com.electromart.backend.model.User;
 import com.electromart.backend.repository.RoleRepository;
+import com.electromart.backend.repository.CartRepository;
+import com.electromart.backend.repository.OrderRepository;
+import com.electromart.backend.repository.ReviewRepository;
+import com.electromart.backend.repository.WishlistRepository;
 import com.electromart.backend.repository.UserRepository;
 import com.electromart.backend.security.JwtUtils;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,17 +36,29 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authenticationManager;
+    private final CartRepository cartRepository;
+    private final WishlistRepository wishlistRepository;
+    private final OrderRepository orderRepository;
+    private final ReviewRepository reviewRepository;
 
     public UserService(UserRepository userRepository,
                        RoleRepository roleRepository,
                        PasswordEncoder passwordEncoder,
                        JwtUtils jwtUtils,
-                       AuthenticationManager authenticationManager) {
+                       AuthenticationManager authenticationManager,
+                       CartRepository cartRepository,
+                       WishlistRepository wishlistRepository,
+                       OrderRepository orderRepository,
+                       ReviewRepository reviewRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
         this.authenticationManager = authenticationManager;
+        this.cartRepository = cartRepository;
+        this.wishlistRepository = wishlistRepository;
+        this.orderRepository = orderRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     public User registerUser(UserDTO userDTO) {
@@ -99,10 +116,25 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("User", id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", id));
+
+        reviewRepository.findByUserId(id).forEach(reviewRepository::delete);
+
+        wishlistRepository.findByUserId(id).forEach(wishlistRepository::delete);
+
+        Cart cart = cartRepository.findByUser(user);
+        if (cart != null) {
+            cartRepository.delete(cart);
         }
+
+        orderRepository.findByUserId(id).forEach(orderRepository::delete);
+
+        user.getRoles().clear();
+        userRepository.save(user);
+
         userRepository.deleteById(id);
     }
 }

@@ -90,6 +90,11 @@ public class AdminController {
     }
 
     // Product management
+    @GetMapping("/products")
+    public List<Product> getAllProducts() {
+        return productService.getAllProducts();
+    }
+
     @PostMapping("/products")
     public Product addProduct(@RequestBody ProductDTO productDTO) {
         return productService.addProduct(productDTO);
